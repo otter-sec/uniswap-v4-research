@@ -24,3 +24,7 @@ By applying this modifier to all hook functions, we can fully mitigate the issue
 
 
 ## In the wild examples
+https://github.com/beihaili/UniswapV4-deployment-and-setting-up-hooks/blob/main/contracts/LimitOrder.sol#L446
+https://github.com/Uniswap/v4-periphery/blob/main/contracts/hooks/examples/FullRange.sol#L240 
+https://github.com/atj3097/mfa-multisig-hook-v4/blob/main/src/MultiSigSwapHook.sol#L72
+https://github.com/ArrakisFinance/uni-v4-playground/blob/main/contracts/ArrakisHookV1.sol#L79

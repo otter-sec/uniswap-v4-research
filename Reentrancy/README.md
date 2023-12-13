@@ -15,3 +15,4 @@ As usual, there are no catch-call protections for reentrancy bugs, but a few rul
 3. Conform to the check effect interaction pattern. If reentrancy guard is not desired, whether for gas saving or other reasons, the check effect interaction pattern may also help ensure that reentrancies won't lead to unexpected check bypasses. However, also note that this requires a bit more effort to get correct compared to the other two options listed above.
 
 ## In the wild examples
+https://github.com/mrhouzlane/CaptainHooks/blob/main/packages/foundry/contracts/UniversalHook.sol#L407

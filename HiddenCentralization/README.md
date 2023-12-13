@@ -19,3 +19,4 @@ In practice, privileged roles do not necessarily mean malicious parties. Those r
 Nonetheless, if hook developers want to minimize such risk, the best approach would be to get rid of privileged roles altogether.
 
 ## In the wild examples
+https://github.com/atj3097/whitelist-hook/blob/main/src/WhitelistHook.sol#L19
