@@ -5,6 +5,6 @@ In this repo, we explore bugs that might come from the UniswapV4 Hook interface.
 ## Bug Class
 1. [Access Control]()
 2. [Reentrancy]()
-3. [Incorrect Pool Value Usage]()
+3. [Incorrect Pool State Usage]()
 4. [Hook Misuse]()
 5. [Hidden Centralization Risks]()

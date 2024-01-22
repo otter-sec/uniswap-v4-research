@@ -15,4 +15,4 @@ Other potential hook misuses could include misunderstanding of when hooks are ca
 Aside from reading univ4 documents and code, another way to prevent those coding mistakes to write integration tests rigorously. With high test coverage, api misuse should be easy to spot, since even the simpliest input usually yields highly different execution results (as opposed to security bugs, which might require complex inputs to trigger).
 
 ## In the wild examples
-https://github.com/Shivamycodee/WID-KYC-Hook/blob/master/src/WorldIDKyc.sol#L112
+https://github.com/Shivamycodee/WID-KYC-Hook/blob/fa78115908ff817bd8b1045c8759ce6cf83f7a6e/src/WorldIDKyc.sol#L112  

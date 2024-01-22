@@ -14,9 +14,9 @@ In our example [vuln.sol](), we present a case where admins may upgrade from V1 
 
 Since this is not a vulnerability in the contract, there is no real mitigation against it, except for requiring users to do their own research before using contracts. 
 
-In practice, privileged roles do not necessarily mean malicious parties. Those roles may be used to take actions when security incidence happens, or as governance to ensure the well-standing of the protocol.
+In practice, privileged roles do not necessarily mean the actors are malicious parties. Those roles may be used to take actions when security incidence happens, or as governance to ensure the well-standing of the protocol.
 
 Nonetheless, if hook developers want to minimize such risk, the best approach would be to get rid of privileged roles altogether.
 
 ## In the wild examples
-https://github.com/atj3097/whitelist-hook/blob/main/src/WhitelistHook.sol#L19
+https://github.com/atj3097/whitelist-hook/blob/4f0b43422fbd92cea4987dc536359e5eccef642f/src/WhitelistHook.sol#L19  
