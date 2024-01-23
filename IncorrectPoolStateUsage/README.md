@@ -56,7 +56,3 @@ Secondly, contracts that do not attempt to modify external contracts states (all
 
 This leaves us with the final case, where a hook both queries external contracts and also attempts to modify their states. In this case, there is no general way to detect / eliminate all bugs, but a simple thumb of rule is to fetch data right before using. This ensures that the data used in processing is always fresh and would not disagree with actual value in external contracts. While repeatedly querying may turn out to be costly in terms of gas, unless developers are extremely clear about the side affects of all external calls, this is the only way to minimize usage of incorrect values.
 
-## In the wild examples
-https://github.com/saucepoint/v4-stoploss/blob/881a13ac3451b0cdab0e19e122e889f1607520b7/src/StopLoss.sol#L89  
-https://github.com/LearnWeb3DAO/uniswap-v4-take-profits-hook/blob/378b79b71cdd9a2a55232d285d0c81a60d974f76/src/TakeProfitsHook.sol#L115  
-https://github.com/jiyuhan/uniswap-v4-liquidity-chaining/blob/9242a14f3e3ccdae4ef519200210744a009bc82d/src/LChain.sol#L117  

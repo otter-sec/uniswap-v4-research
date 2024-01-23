@@ -14,6 +14,3 @@ As usual, there are no catch-call protections for reentrancy bugs, but a few rul
 2. Use reentrancy guards. If external calls are necessary, consider adding reentrancy guards on functions that are not explicitly meant to be reentrant.
 3. Conform to the check effect interaction pattern. If reentrancy guard is not desired, whether for gas saving or other reasons, the check effect interaction pattern may also help ensure that reentrancies won't lead to unexpected check bypasses. However, also note that this requires a bit more effort to get correct compared to the other two options listed above.
 
-## In the wild examples
-In practice, reentrancy issues might be a bit more obscure than shown in the minimal vulnerable code. For instance, the example here recursively calls swap on poolManage.  
-https://github.com/saucepoint/v4-stoploss/blob/881a13ac3451b0cdab0e19e122e889f1607520b7/src/StopLoss.sol#L89  
