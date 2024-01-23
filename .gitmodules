@@ -1,0 +1,6 @@
+[submodule "deps/openzeppelin-contracts"]
+	path = deps/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "deps/v4-core"]
+	path = deps/v4-core
+	url = https://github.com/Uniswap/v4-core.git

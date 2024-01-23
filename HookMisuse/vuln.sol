@@ -33,7 +33,7 @@ abstract contract VulnHook is Ownable {
                 afterSwap: false,
                 beforeDonate: false,
                 afterDonate: false,
-		noOp: false
+                noOp: false
             });
     }
 
@@ -49,6 +49,6 @@ abstract contract VulnHook is Ownable {
     }
 
     function setBlackList(address user, bool disallow) external onlyOwner {
-      blackListed[user] = disallow;
+        blackListed[user] = disallow;
     }
 }

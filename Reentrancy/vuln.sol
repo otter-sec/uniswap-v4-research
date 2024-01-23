@@ -32,21 +32,23 @@ abstract contract VulnHook {
                 afterSwap: false,
                 beforeDonate: false,
                 afterDonate: true,
-		noOp: false
+                noOp: false
             });
     }
 
-    function afterDonate(address sender, PoolKey calldata, uint256, uint256, bytes calldata)
-        external
-        poolManagerOnly
-        returns (bytes4)
-    {
+    function afterDonate(
+        address sender,
+        PoolKey calldata,
+        uint256,
+        uint256,
+        bytes calldata
+    ) external poolManagerOnly returns (bytes4) {
         if (!firstTimeDonateBonus[sender]) {
             (bool success, ) = sender.call{value: 1 ether}("");
             require(success, "send donate bonus failed");
         }
         firstTimeDonateBonus[sender] = true;
-	return VulnHook.afterDonate.selector;
+        return VulnHook.afterDonate.selector;
     }
 
     function fund() external payable {}

@@ -13,7 +13,6 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ERC1155} from "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 
 abstract contract VulnHook is ERC1155 {
-
     using PoolIdLibrary for PoolKey;
 
     IPoolManager public immutable poolManager;
@@ -21,7 +20,8 @@ abstract contract VulnHook is ERC1155 {
     mapping(PoolId poolId => int24 tickLower) public tickLowerLasts;
     mapping(uint256 tokenId => bool exists) public tokenIdExists;
     mapping(uint256 tokenId => uint256 claimable) public tokenIdClaimable;
-    mapping(PoolId poolId => mapping(int24 tick => mapping(bool zeroForOne => int256 amount))) public takeProfitPositions;
+    mapping(PoolId poolId => mapping(int24 tick => mapping(bool zeroForOne => int256 amount)))
+        public takeProfitPositions;
     mapping(uint256 tokenId => uint256 supply) public tokenIdTotalSupply;
     mapping(uint256 tokenId => TokenData) public tokenIdData;
 
@@ -53,7 +53,7 @@ abstract contract VulnHook is ERC1155 {
                 afterSwap: true,
                 beforeDonate: false,
                 afterDonate: false,
-		noOp: false
+                noOp: false
             });
     }
 
@@ -77,7 +77,7 @@ abstract contract VulnHook is ERC1155 {
         int24 lastTickLower = tickLowerLasts[key.toId()];
 
         // Get the exact current tick and use it to calculate the currentTickLower
-        (, int24 currentTick, ,) = poolManager.getSlot0(key.toId());
+        (, int24 currentTick, , ) = poolManager.getSlot0(key.toId());
         int24 currentTickLower = _getTickLower(currentTick, key.tickSpacing);
 
         // We execute orders in the opposite direction

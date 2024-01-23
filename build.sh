@@ -1,3 +1,5 @@
 #!/bin/sh
 
-./solc @uniswap/v4-core/contracts=/home/v4-core/src @openzeppelin/contracts=/home/openzeppelin-contracts/contracts vuln.sol
+set -eu
+
+forge test -R @uniswap/v4-core/contracts=./deps/v4-core/src -R @openzeppelin/contracts=./deps/openzeppelin-contracts/contracts --contracts $1

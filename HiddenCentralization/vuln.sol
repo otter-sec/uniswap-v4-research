@@ -10,7 +10,10 @@ abstract contract MalHookV1 {
     IPoolManager public poolManager;
 
     function initialize(IPoolManager _poolManager) external {
-        require(address(poolManager) == address(0) && address(_poolManager) != address(0));
+        require(
+            address(poolManager) == address(0) &&
+                address(_poolManager) != address(0)
+        );
         poolManager = _poolManager;
     }
 
@@ -25,7 +28,7 @@ abstract contract MalHookV1 {
                 afterSwap: false,
                 beforeDonate: false,
                 afterDonate: false,
-		noOp: false
+                noOp: false
             });
     }
 
@@ -35,7 +38,7 @@ abstract contract MalHookV1 {
         IPoolManager.ModifyPositionParams calldata,
         bytes calldata
     ) external pure returns (bytes4) {
-	return MalHookV1.beforeModifyPosition.selector;
+        return MalHookV1.beforeModifyPosition.selector;
     }
 
     function beforeSwap(
@@ -44,7 +47,7 @@ abstract contract MalHookV1 {
         IPoolManager.SwapParams calldata,
         bytes calldata
     ) external pure returns (bytes4) {
-	return MalHookV1.beforeSwap.selector;
+        return MalHookV1.beforeSwap.selector;
     }
 
     uint256[100] gap;
@@ -57,7 +60,10 @@ abstract contract MalHookV2 {
     error ModifyPositionDisallowed();
 
     function initialize(IPoolManager _poolManager) external {
-        require(address(poolManager) == address(0) && address(_poolManager) != address(0));
+        require(
+            address(poolManager) == address(0) &&
+                address(_poolManager) != address(0)
+        );
         poolManager = _poolManager;
     }
 
@@ -72,7 +78,7 @@ abstract contract MalHookV2 {
                 afterSwap: false,
                 beforeDonate: false,
                 afterDonate: false,
-		noOp: false
+                noOp: false
             });
     }
 
