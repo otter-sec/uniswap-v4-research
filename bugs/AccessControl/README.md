@@ -6,7 +6,7 @@ Since hooks are used to handle supplementary logic for pools, there is a high ch
 
 A common source of contract mismanagement is lack of access control. In the context of univ4 hooks, we have several external facing functions (hooks) that should only be called by the `PoolManager`. If any of those functions modify the hook contract state but does not limit its caller, attackers may directly call them leading to unexpected manipulation of contract state.
 
-We present a minimal example of this in [vuln.sol](), where the `swapCnt` counter is used to track total swaps performed on the `Pool`, but can be manipulated by users who directly call `beforeSwap` due to lack of access control.
+We present a minimal example of this in [VulnHook.sol](./VulnHook.sol), where the `swapCnt` counter is used to track total swaps performed on the `Pool`, but can be manipulated by users who directly call `beforeSwap` due to lack of access control.
 
 ## Mitigation
 
