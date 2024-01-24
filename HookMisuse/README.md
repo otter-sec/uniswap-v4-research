@@ -2,13 +2,13 @@
 
 ## Issue
 
-Flexibility almost always comes at the cost of complexity. Pool deployers are now expected to understand the internals of uniswapv4 before being able to expand the functionalities with hooks.
+Flexibility almost always comes at the cost of complexity. Pool deployers are now expected to understand the internals of Uniswap v4 before being able to expand the functionalities with hooks.
 
-One of the most straightforward vulnerabilities developers may create is misunderstanding the use of hooks. For instance, in the example [vuln.sol](), the code incorrectly assumes it is responsible for calling `poolManager.swap` after passing a check. Due to the locking mechanism in uniswapv4, the call will always revert, rendering the pool unswappable.
+One of the most straightforward vulnerabilities developers may create is misunderstanding the use of hooks. For instance, in the example [vuln.sol](), the code incorrectly assumes it is responsible for calling `poolManager.swap` after passing a check. Due to the locking mechanism in Uniswap v4, the call will always revert, rendering the pool unswappable.
 
 While this bug seems obvious, in more complex codebases, such mistakes may not be as easy to spot and could easily escape the developer's attention. Observe how often on-chain oracle/pricefeed APIs are misused, and it should be obvious that mistakes are bound to be made at some point.
 
-Other potential hook misuses could include misunderstanding of when hooks are called. For instance, I challenge readers to explain what the recently added NoOp hook is used for without checking the source code. With more hooks to be added before univ4 launch, the complexity only grows, and developers must keep up with the latest codebase to prevent misuse of those hooks.
+Other potential hook misuses could include misunderstanding when hooks are called. For instance, I challenge readers to explain what the recently added NoOp hook is used for without checking the source code. With more hooks to be added before the Uniswap v4 launch, the complexity only grows, and developers must keep up with the latest codebase to prevent misuse of those hooks.
 
 ## Mitigation
 
