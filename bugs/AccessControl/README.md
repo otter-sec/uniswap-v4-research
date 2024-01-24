@@ -2,11 +2,11 @@
 
 ## Issue
 
-Since hooks are used to handle supplementary logic for pools, there is a high chance that the hook contract must maintain its own state. Similarly, if any malicious parties are able to manipulate the storage within the contract, it might lead to exploitable bugs.
+Since hooks are used to handle supplementary logic for pools, there is a high chance that the hook contract must maintain its own state. Similarly, if any malicious parties are able to manipulate the storage within the contract, it may bring exploitable bugs.
 
-A common source of contract mismanagement is lack of access control. In the context of univ4 hooks, we have several external facing functions (hooks) that should only be called by the `PoolManager`. If any of those functions modify the hook contract state but does not limit its caller, attackers may directly call them leading to unexpected manipulation of contract state.
+A common source of contract mismanagement is a lack of access control. In the context of Uniswap v4 hooks, we have several external facing functions (hooks) that should only be called by the `PoolManager`. If any of those functions modify the hook contract state but do not limit its caller, attackers may directly call them, resulting in unexpected manipulation of the contract state.
 
-We present a minimal example of this in [VulnHook.sol](./VulnHook.sol), where the `swapCnt` counter is used to track total swaps performed on the `Pool`, but can be manipulated by users who directly call `beforeSwap` due to lack of access control.
+We present a minimal example of this in [VulnHook.sol](./VulnHook.sol), where the `swapCnt` counter tracks total swaps performed on the `Pool`, but is manipulatable by users who directly call `beforeSwap` due to lack of access control.
 
 ## Mitigation
 
@@ -19,4 +19,4 @@ modifier poolManagerOnly() {
 }
 ```
 
-By applying this modifier to all hook functions, we can fully mitigate the issue.
+By applying this modifier to all hook functions, the issue may be fully mitigated.
