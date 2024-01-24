@@ -1,6 +1,6 @@
 # UniswapV4 Hook Analysis
 
-In this repo, we explore bugs that might come from the UniswapV4 Hook interface. The main objective here is to provide a high-level analysis of common mistakes made by earlier developers of uniswapv4 hooks, in hope that it could help future developers avoid same mistakes and conform to best coding practice
+In this repo, we explore bugs that might come from the Uniswap v4 Hook interface. The main objective here is to provide a high-level analysis of common mistakes made by earlier developers of Uniswap v4 hooks in the hope that it helps future developers avoid the same mistakes and conform to best coding practices.
 
 ## Bug Class
 1. [Access Control]()
