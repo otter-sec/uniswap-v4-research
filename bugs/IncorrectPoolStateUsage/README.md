@@ -42,7 +42,7 @@ function afterSwap(
 }
 ```
 
-The example shown in [vuln.sol]() is modified from one of the examples we found in the wild.
+The example shown in [VulnHook.sol](./VulnHook.sol) is modified from one of the examples we found in the wild.
 
 There are a lot of chances of externally sourced data misuse in hooks, but the example presented here is especially interesting to us since it is related to the dynamic pool states and a pretty common region that developers overlook.
 

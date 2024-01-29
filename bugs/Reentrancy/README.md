@@ -4,7 +4,7 @@
 
 One long-standing issue in Solidity is reentrancy, and hooks are no exception. UniswapV4 itself is written to ensure that reentrancy wouldn't affect its internal states, but the same is not guaranteed for hooks. Since uniswapv4 does not adopt reentrancy guards, hook contracts must decide whether reentrancy is impactful to their business logic and, if the answer is yes, how to prevent it.
 
-A minimal example of this is [vuln.sol](), where the donate bonus can be claimed several times by reentering the `afterDonate` function.
+A minimal example of this is [VulnHook.sol](./VulnHook.sol), where the donate bonus can be claimed several times by reentering the `afterDonate` function.
 
 ## Mitigation
 
