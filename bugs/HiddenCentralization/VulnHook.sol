@@ -1,64 +1,26 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import {Hooks} from "@uniswap/v4-core/contracts/libraries/Hooks.sol";
-import {IHooks} from "@uniswap/v4-core/contracts/interfaces/IHooks.sol";
-import {IPoolManager} from "@uniswap/v4-core/contracts/interfaces/IPoolManager.sol";
-import {PoolKey} from "@uniswap/v4-core/contracts/types/PoolKey.sol";
+import {IPoolManager} from "v4-core/src/interfaces/IPoolManager.sol";
+import {PoolId, PoolIdLibrary} from "v4-core/src/types/PoolId.sol";
+import {BalanceDelta} from "v4-core/src/types/BalanceDelta.sol";
+import {TickMath} from "v4-core/src/libraries/TickMath.sol";
+import {IHooks} from "v4-core/src/interfaces/IHooks.sol";
+import {Hooks} from "v4-core/src/libraries/Hooks.sol";
+import {PoolKey} from "v4-core/src/types/PoolKey.sol";
+import {console} from "forge-std/console.sol";
 
-abstract contract MalHookV1 {
-    IPoolManager public poolManager;
 
-    function initialize(IPoolManager _poolManager) external {
-        require(
-            address(poolManager) == address(0) &&
-                address(_poolManager) != address(0)
-        );
-        poolManager = _poolManager;
-    }
+contract VulnHook is IHooks{
+    using PoolIdLibrary for PoolKey;
 
-    function getHooksCalls() public pure returns (Hooks.Calls memory) {
-        return
-            Hooks.Calls({
-                beforeInitialize: false,
-                afterInitialize: false,
-                beforeModifyPosition: true,
-                afterModifyPosition: false,
-                beforeSwap: true,
-                afterSwap: false,
-                beforeDonate: false,
-                afterDonate: false,
-                noOp: false
-            });
-    }
-
-    function beforeModifyPosition(
-        address,
-        PoolKey calldata,
-        IPoolManager.ModifyPositionParams calldata,
-        bytes calldata
-    ) external pure returns (bytes4) {
-        return MalHookV1.beforeModifyPosition.selector;
-    }
-
-    function beforeSwap(
-        address,
-        PoolKey calldata,
-        IPoolManager.SwapParams calldata,
-        bytes calldata
-    ) external pure returns (bytes4) {
-        return MalHookV1.beforeSwap.selector;
-    }
-
-    uint256[100] gap;
-}
-
-abstract contract MalHookV2 {
-    IPoolManager public poolManager;
-
+    error NotPoolManager();
+    error HookNotImplemented();
     error SwapDisallowed();
     error ModifyPositionDisallowed();
 
+    IPoolManager public poolManager;
+
     function initialize(IPoolManager _poolManager) external {
         require(
             address(poolManager) == address(0) &&
@@ -67,38 +29,88 @@ abstract contract MalHookV2 {
         poolManager = _poolManager;
     }
 
+    /// @dev Only the pool manager may call this function
+    modifier poolManagerOnly() {
+        if (msg.sender != address(poolManager)) revert NotPoolManager();
+        _;
+    }
+
     function getHooksCalls() public pure returns (Hooks.Calls memory) {
-        return
-            Hooks.Calls({
-                beforeInitialize: false,
-                afterInitialize: false,
-                beforeModifyPosition: true,
-                afterModifyPosition: false,
-                beforeSwap: true,
-                afterSwap: false,
-                beforeDonate: false,
-                afterDonate: false,
-                noOp: false
-            });
+        return Hooks.Calls({
+            beforeInitialize: false,
+            afterInitialize: false,
+            beforeModifyPosition: true,
+            afterModifyPosition: false,
+            beforeSwap: true,
+            afterSwap: false,
+            beforeDonate: false,
+            afterDonate: false,
+            noOp: false
+        });
+    }
+
+    // -------
+    // HOOKS
+    // -------
+
+    function beforeSwap(address, PoolKey calldata key, IPoolManager.SwapParams calldata, bytes calldata)
+        external
+        returns (bytes4)
+    {
+        revert SwapDisallowed();
+    }
+
+    function afterSwap(address, PoolKey calldata key, IPoolManager.SwapParams calldata, BalanceDelta, bytes calldata)
+        external
+        returns (bytes4)
+    {
+        revert HookNotImplemented();
     }
 
     function beforeModifyPosition(
         address,
-        PoolKey calldata,
+        PoolKey calldata key,
         IPoolManager.ModifyPositionParams calldata,
         bytes calldata
     ) external pure returns (bytes4) {
         revert ModifyPositionDisallowed();
     }
 
-    function beforeSwap(
+    function afterModifyPosition(
         address,
-        PoolKey calldata,
-        IPoolManager.SwapParams calldata,
+        PoolKey calldata key,
+        IPoolManager.ModifyPositionParams calldata,
+        BalanceDelta,
         bytes calldata
-    ) external pure returns (bytes4) {
-        revert SwapDisallowed();
+    ) external returns (bytes4){
+        revert HookNotImplemented();
+    }
+    
+    function beforeDonate(address sender, PoolKey calldata key, uint256, uint256, bytes calldata)
+        external
+        returns (bytes4)
+    {
+        revert HookNotImplemented();
     }
 
+    
+    function afterDonate(address, PoolKey calldata key, uint256, uint256, bytes calldata)
+        external
+        returns (bytes4)
+    {
+        revert HookNotImplemented();
+    }
+
+    function beforeInitialize(address, PoolKey calldata, uint160, bytes calldata) external returns (bytes4) {
+        revert HookNotImplemented();
+    }
+
+    function afterInitialize(address, PoolKey calldata, uint160, int24, bytes calldata)
+        external
+        returns (bytes4)
+    {
+        revert HookNotImplemented();
+    }
+    
     uint256[100] gap;
 }
