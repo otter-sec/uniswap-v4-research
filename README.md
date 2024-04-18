@@ -9,7 +9,7 @@ After clonning the repo, run the dockerfile to execute a PoC:
 ```bash
 docker build --no-cache --progress=plain --build-arg poc_path="./bugs/<folder-name>/PoC.sol" -t hooks . 
 ```
-> Note: If the `poc_path` arguments is not specified, all PoC's will be executed by default.
+> Note: If the `poc_path` argument is not specified, all PoC's will be executed by default.
 
 ### Via shell script
 
