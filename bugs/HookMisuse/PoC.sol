@@ -58,7 +58,6 @@ library HookMiner {
     }
 }
 
-
 contract VulnHookTest is Test, Deployers{
     using PoolIdLibrary for PoolKey;
     using CurrencyLibrary for Currency;
