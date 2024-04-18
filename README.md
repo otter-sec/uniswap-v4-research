@@ -1,10 +1,66 @@
-# UniswapV4 Hook Analysis
+## Foundry
 
-In this repo, we explore bugs that might come from the Uniswap v4 Hook interface. The main objective here is to provide a high-level analysis of common mistakes made by earlier developers of Uniswap v4 hooks in the hope that it helps future developers avoid the same mistakes and conform to best coding practices.
+**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
 
-## Bug Class
-1. [Access Control](./bugs/AccessControl)
-2. [Reentrancy](./bugs/Reentrancy)
-3. [Incorrect Pool State Usage](./bugs/IncorrectPoolStateUsage)
-4. [Hook Misuse](./bugs/HookMisuse)
-5. [Hidden Centralization Risks](./bugs/HiddenCentralization)
+Foundry consists of:
+
+-   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
+-   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
+-   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
+-   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+
+## Documentation
+
+https://book.getfoundry.sh/
+
+## Usage
+
+### Build
+
+```shell
+$ forge build
+```
+
+### Test
+
+```shell
+$ forge test
+```
+
+### Format
+
+```shell
+$ forge fmt
+```
+
+### Gas Snapshots
+
+```shell
+$ forge snapshot
+```
+
+### Anvil
+
+```shell
+$ anvil
+```
+
+### Deploy
+
+```shell
+$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+```
+
+### Cast
+
+```shell
+$ cast <subcommand>
+```
+
+### Help
+
+```shell
+$ forge --help
+$ anvil --help
+$ cast --help
+```

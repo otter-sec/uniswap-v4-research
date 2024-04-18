@@ -1,18 +1,25 @@
 // SPDX-License-Identifier: UNLICENSED
+
+//  forge install https://github.com/Uniswap/v4-core@06564d33b2fa6095830c914461ee64d34d39c305
+
 pragma solidity ^0.8.19;
 
-import {Hooks} from "@uniswap/v4-core/contracts/libraries/Hooks.sol";
-import {IHooks} from "@uniswap/v4-core/contracts/interfaces/IHooks.sol";
-import {IPoolManager} from "@uniswap/v4-core/contracts/interfaces/IPoolManager.sol";
-import {PoolId, PoolIdLibrary} from "@uniswap/v4-core/contracts/types/PoolId.sol";
-import {Currency, CurrencyLibrary} from "@uniswap/v4-core/contracts/types/Currency.sol";
-import {PoolKey} from "@uniswap/v4-core/contracts/types/PoolKey.sol";
-import {BalanceDelta} from "@uniswap/v4-core/contracts/types/BalanceDelta.sol";
-import {TickMath} from "@uniswap/v4-core/contracts/libraries/TickMath.sol";
+import {IPoolManager} from "v4-core/src/interfaces/IPoolManager.sol";
+import {PoolId, PoolIdLibrary} from "v4-core/src/types/PoolId.sol";
+import {BalanceDelta} from "v4-core/src/types/BalanceDelta.sol";
+import {TickMath} from "v4-core/src/libraries/TickMath.sol";
+import {IHooks} from "v4-core/src/interfaces/IHooks.sol";
+import {Hooks} from "v4-core/src/libraries/Hooks.sol";
+import {PoolKey} from "v4-core/src/types/PoolKey.sol";
+import {CurrencyLibrary, Currency} from "v4-core/src/types/Currency.sol";
+
+import "forge-std/Test.sol";
+import { console } from "forge-std/console.sol";
+
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ERC1155} from "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 
-abstract contract VulnHook is ERC1155 {
+contract VulnHook is Test, IHooks, ERC1155 {
     using PoolIdLibrary for PoolKey;
 
     IPoolManager public immutable poolManager;
@@ -32,13 +39,14 @@ abstract contract VulnHook is ERC1155 {
     }
 
     error NotPoolManager();
+    error HookNotImplemented();
 
     modifier poolManagerOnly() {
         if (msg.sender != address(poolManager)) revert NotPoolManager();
         _;
     }
 
-    constructor(IPoolManager _poolManager) {
+    constructor(IPoolManager _poolManager) ERC1155("") {
         poolManager = _poolManager;
     }
 
@@ -58,10 +66,11 @@ abstract contract VulnHook is ERC1155 {
     }
 
     function afterInitialize(
-        address,
+        address sender,
         PoolKey calldata key,
-        uint160,
-        int24 tick
+        uint160 sqrtPriceX96,
+        int24 tick,
+        bytes calldata hookData
     ) external poolManagerOnly returns (bytes4) {
         _setTickLowerLast(key.toId(), _getTickLower(tick, key.tickSpacing));
         return VulnHook.afterInitialize.selector;
@@ -113,6 +122,7 @@ abstract contract VulnHook is ERC1155 {
                 if (swapAmountIn > 0) {
                     fillOrder(key, tick, swapZeroForOne, swapAmountIn);
                 }
+
                 tick -= key.tickSpacing;
             }
         }
@@ -169,7 +179,7 @@ abstract contract VulnHook is ERC1155 {
         // i.e. Change in Token 0 balance and change in Token 1 balance
         BalanceDelta delta = poolManager.swap(key, params, "");
 
-        // If this swap was a swap for Token 0 to Token 1
+        // If this swap was a swap for Token 0 to Token 1            
         if (params.zeroForOne) {
             // If we owe Uniswap Token 0, we need to send them the required amount
             if (delta.amount0() > 0) {
@@ -278,4 +288,54 @@ abstract contract VulnHook is ERC1155 {
         if (actualTick < 0 && actualTick % tickSpacing != 0) intervals--; // round towards negative infinity
         return intervals * tickSpacing;
     }
+
+
+    function beforeDonate(address sender, PoolKey calldata key, uint256, uint256, bytes calldata)
+        external
+        returns (bytes4)
+    {
+        revert HookNotImplemented();
+    }
+
+    function afterDonate(address sender, PoolKey calldata key, uint256, uint256, bytes calldata)
+        external
+        returns (bytes4)
+    {
+        revert HookNotImplemented();
+    }
+
+    function beforeSwap(address, PoolKey calldata key, IPoolManager.SwapParams calldata, bytes calldata)
+        external
+        returns (bytes4)
+    {
+        revert HookNotImplemented();
+    }
+
+    function beforeModifyPosition(
+        address,
+        PoolKey calldata key,
+        IPoolManager.ModifyPositionParams calldata,
+        bytes calldata
+    ) external pure returns (bytes4) {
+        revert HookNotImplemented();
+    }
+
+    function afterModifyPosition(
+        address,
+        PoolKey calldata key,
+        IPoolManager.ModifyPositionParams calldata,
+        BalanceDelta,
+        bytes calldata
+    ) external returns (bytes4){
+        revert HookNotImplemented();
+    }
+
+    function beforeInitialize(address, PoolKey calldata, uint160, bytes calldata) external returns (bytes4) {
+        revert HookNotImplemented();
+    }
+
+    // function getHookFees(PoolKey calldata key) external view returns (uint24){
+    //     return 0;
+    // }
+
 }

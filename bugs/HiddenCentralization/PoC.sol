@@ -92,13 +92,14 @@ contract VulnHookTest is Test, Deployers{
         require(address(vulnHook) == hookAddress, "VulnHookTest: hook address mismatch");
 
         // Create the pool
-        console.log("Creating the pool");
+        console.log("Creating the pool.");
         key = PoolKey(currency0, currency1, 3000, 60, IHooks(vulnHook));
         poolId = key.toId();
         initializeRouter.initialize(key, SQRT_RATIO_1_1, ZERO_BYTES);
     }
     
     function testFail_SwapCentralization() public {
+        console.log("Executing SwapCentralization test.");
         console.log("Executing Swap of 1 ether to invoke beforeSwap hook!");
 
         // Perform swap //
@@ -107,12 +108,13 @@ contract VulnHookTest is Test, Deployers{
         BalanceDelta swapDelta = swap(key, zeroForOne, amountSpecified, ZERO_BYTES);
         // ------------------- //
 
-        assertEq(int256(swapDelta.amount0()), amountSpecified);
         console.log("Test failed due to SwapDisallowed() error within beforeSwap hook!");
+        assertEq(int256(swapDelta.amount0()), amountSpecified);
     }
 
     function testFail_LiquidityCentralization() public {
-        console.log("Provide liquidity to the pool to invoke beforeModifyPosition hook!");
+        console.log("Executing LiquidityCentralization test.");
+        console.log("Providing liquidity to the pool to invoke beforeModifyPosition hook!");
 
         // Provide liquidity to the pool
         modifyPositionRouter.modifyPosition(key, IPoolManager.ModifyPositionParams(-60, 60, 10 ether), ZERO_BYTES);

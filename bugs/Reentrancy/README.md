@@ -14,5 +14,6 @@ As usual, there are no catch-call protections for reentrancy bugs, but a few rul
 2. Use reentrancy guards. If external calls are necessary, consider adding reentrancy guards on functions that are not explicitly meant to be reentrant.
 3. Conform to the check effect interaction pattern. If a reentrancy guard is not desired, whether for gas saving or other reasons, the check effect interaction pattern may also help ensure that reentrancies won't result in unexpected check bypasses. However, also note that this requires a bit more effort to correctly implement compared to the other two options.
 
-
+## Patch
+This ([PatchedHook.sol](./PatchedHook.sol)) is the patched version of the vulnerabile hook ([VulnHook.sol](./VulnHook.sol)) contract. 
 

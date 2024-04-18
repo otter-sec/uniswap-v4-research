@@ -14,5 +14,7 @@ Other potential hook misuses could include misunderstanding when hooks are calle
 
 Aside from reading univ4 documents and code, another way to prevent those coding mistakes is to write integration tests rigorously. With high test coverage, API misuse should be easy to spot since even the simplest input usually yields highly different execution results (as opposed to security bugs, which might require complex inputs to trigger).
 
+## Patch
+This ([PatchedHook.sol](./PatchedHook.sol)) is the patched version of the vulnerabile hook ([VulnHook.sol](./VulnHook.sol)) contract. 
 
 

@@ -56,3 +56,5 @@ Secondly, contracts that do not attempt to modify external contract states (all 
 
 This leaves us with the final case, where a hook both queries external contracts and also attempts to modify their states. In this case, there is no general way to detect/eliminate all bugs, but a simple rule of thumb is to fetch data right before utilizing it. This ensures that the data used in processing is always fresh and would not disagree with the actual value in external contracts. While repeatedly querying may be costly in terms of gas, unless developers are extremely clear about the side effects of all external calls, this is the only way to minimize the usage of incorrect values.
 
+## Patch
+This ([PatchedHook.sol](./PatchedHook.sol)) is the patched version of the vulnerabile hook ([VulnHook.sol](./VulnHook.sol)) contract. 

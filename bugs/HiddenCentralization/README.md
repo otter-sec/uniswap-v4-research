@@ -17,3 +17,5 @@ In practice, privileged roles do not necessarily mean the actors are malicious p
 
 Nonetheless, if hook developers wish to minimize such risk, the best approach would be to eliminate privileged roles.
 
+## Patch
+This ([PatchedHook.sol](./PatchedHook.sol)) is the patched version of the vulnerabile hook ([VulnHook.sol](./VulnHook.sol)) contract. 
