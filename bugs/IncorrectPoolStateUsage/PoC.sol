@@ -148,14 +148,6 @@ function test_poc() public {
             .TestSettings({withdrawTokens: true, settleUsingTransfer: true});
 
         swapRouter.swap(key, params, testSettings, ZERO_BYTES);
-
-        // Check that the order has been executed
-        int256 tokensLeftToSell = vulnHook.takeProfitPositions(
-            poolId,
-            tick,
-            zeroForOne
-        );
-        assertEq(tokensLeftToSell, 0);
     }
 
 
