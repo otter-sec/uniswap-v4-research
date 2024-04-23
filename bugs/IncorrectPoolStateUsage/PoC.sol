@@ -170,19 +170,6 @@ function test_poc() public {
 //         // Note the new balance of token0 we have
 //         uint256 newBalance = token0.balanceOf(address(this));
 
-//         // Do a separate swap from oneForZero to make tick go up
-//         // Sell 1e18 token1 tokens for token0 tokens
-//         IPoolManager.SwapParams memory params = IPoolManager.SwapParams({
-//             zeroForOne: !zeroForOne,
-//             amountSpecified: 20 ether,
-//             sqrtPriceLimitX96: TickMath.MAX_SQRT_RATIO - 1
-//         });
-
-//         PoolSwapTest.TestSettings memory testSettings = PoolSwapTest
-//             .TestSettings({withdrawTokens: true, settleUsingTransfer: true});
-
-//         swapRouter.swap(key, params, testSettings, ZERO_BYTES);
-
 //         // Since we deployed the pool contract with tick spacing = 60
 //         // i.e. the tick can only be a multiple of 60
 //         // and initially the tick is 0
