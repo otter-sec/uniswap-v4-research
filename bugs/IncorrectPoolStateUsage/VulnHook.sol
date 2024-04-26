@@ -41,6 +41,12 @@ contract VulnHook is Test, IHooks, ERC1155 {
     error NotPoolManager();
     error HookNotImplemented();
 
+        
+    struct HandleSwapData {
+        PoolKey k;
+        IPoolManager.SwapParams sp;    
+    }
+
     modifier poolManagerOnly() {
         if (msg.sender != address(poolManager)) revert NotPoolManager();
         _;
@@ -84,11 +90,19 @@ contract VulnHook is Test, IHooks, ERC1155 {
         bytes calldata
     ) external poolManagerOnly returns (bytes4) {
         int24 lastTickLower = tickLowerLasts[key.toId()];
+        // console.log("slippage");
+        // console.log(TickMath.MIN_SQRT_RATIO + 1);
+        // console.log(TickMath.MAX_SQRT_RATIO - 1);
+
+
+        console.log("lastTickLower");
+        console.log(uint24(lastTickLower));
 
         // Get the exact current tick and use it to calculate the currentTickLower
         (, int24 currentTick, , ) = poolManager.getSlot0(key.toId());
         int24 currentTickLower = _getTickLower(currentTick, key.tickSpacing);
-
+        console.log("currentTickLower:");
+        console.log(uint24(currentTickLower));
         // We execute orders in the opposite direction
         // i.e. if someone does a zeroForOne swap to increase price of Token 1, we execute
         // all orders that are oneForZero
@@ -99,6 +113,7 @@ contract VulnHook is Test, IHooks, ERC1155 {
 
         // If tick has increased (i.e. price of Token 1 has increased)
         if (lastTickLower < currentTickLower) {
+            console.log("inside if condition in afterSwap");
             // Loop through all ticks between the lastTickLower and currentTickLower
             // and execute all orders that are oneForZero
             for (int24 tick = lastTickLower; tick < currentTickLower; ) {
@@ -113,6 +128,7 @@ contract VulnHook is Test, IHooks, ERC1155 {
         }
         // Else if tick has decreased (i.e. price of Token 0 has increased)
         else {
+            console.log("inside else condition in afterSwap");
             // Loop through all ticks between the lastTickLower and currentTickLower
             // and execute all orders that are zeroForOne
             for (int24 tick = lastTickLower; currentTickLower < tick; ) {
@@ -150,9 +166,11 @@ contract VulnHook is Test, IHooks, ERC1155 {
                 : TickMath.MAX_SQRT_RATIO - 1
         });
 
+        console.log("inside fill order");
+ 
         BalanceDelta delta = abi.decode(
             poolManager.lock(
-                abi.encodeCall(this._handleSwap, (key, swapParams))
+                abi.encode(HandleSwapData(key, swapParams))
             ),
             (BalanceDelta)
         );
@@ -171,10 +189,23 @@ contract VulnHook is Test, IHooks, ERC1155 {
         tokenIdClaimable[tokenId] += amountOfTokensReceivedFromSwap;
     }
 
+
+
+    function lockAcquired(bytes calldata rawData) external returns (bytes memory) {
+        require(msg.sender == address(poolManager));
+        HandleSwapData memory data = abi.decode(rawData, (HandleSwapData));
+
+        BalanceDelta delta = this._handleSwap(data.k,data.sp);
+
+        return abi.encode(delta);
+    }
+
     function _handleSwap(
         PoolKey calldata key,
         IPoolManager.SwapParams calldata params
     ) external returns (BalanceDelta) {
+        console.log("inside handle swap");
+
         // delta is the BalanceDelta struct that stores the delta balance changes
         // i.e. Change in Token 0 balance and change in Token 1 balance
         BalanceDelta delta = poolManager.swap(key, params, "");
@@ -223,9 +254,10 @@ contract VulnHook is Test, IHooks, ERC1155 {
             }
         }
 
+        console.log("Exiting handle swap");
+
         return delta;
     }
-
     // Core Utilities
     function placeOrder(
         PoolKey calldata key,
@@ -254,6 +286,9 @@ contract VulnHook is Test, IHooks, ERC1155 {
         address tokenToBeSoldContract = zeroForOne
             ? Currency.unwrap(key.currency0)
             : Currency.unwrap(key.currency1);
+
+
+        int24 lastTickLower = tickLowerLasts[key.toId()];
 
         // Move the tokens to be sold from the user to this contract
         IERC20(tokenToBeSoldContract).transferFrom(
@@ -333,9 +368,5 @@ contract VulnHook is Test, IHooks, ERC1155 {
     function beforeInitialize(address, PoolKey calldata, uint160, bytes calldata) external returns (bytes4) {
         revert HookNotImplemented();
     }
-
-    // function getHookFees(PoolKey calldata key) external view returns (uint24){
-    //     return 0;
-    // }
 
 }
