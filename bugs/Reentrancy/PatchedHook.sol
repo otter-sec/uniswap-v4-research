@@ -36,7 +36,7 @@ abstract contract VulnHook {
             });
     }
 
-    function afterDonate(
+    function beforeDonate(
         address sender,
         PoolKey calldata,
         uint256,
