@@ -30,8 +30,8 @@ abstract contract VulnHook {
                 afterModifyPosition: false,
                 beforeSwap: false,
                 afterSwap: false,
-                beforeDonate: false,
-                afterDonate: true,
+                beforeDonate: true,
+                afterDonate: false,
                 noOp: false
             });
     }
@@ -48,7 +48,7 @@ abstract contract VulnHook {
             (bool success, ) = sender.call{value: 1 ether}("");
             require(success, "send donate bonus failed");
         }
-        return VulnHook.afterDonate.selector;
+        return VulnHook.beforeDonate.selector;
     }
 
     function fund() external payable {}
