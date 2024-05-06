@@ -1,0 +1,148 @@
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.20;
+
+import {CurrencyLibrary, Currency} from "v4-core/src/types/Currency.sol";
+import {IPoolManager} from "v4-core/src/interfaces/IPoolManager.sol";
+import {IERC20Minimal} from "v4-core/src/interfaces/external/IERC20Minimal.sol";
+import {ILockCallback} from "v4-core/src/interfaces/callback/ILockCallback.sol";
+
+import {BalanceDelta, BalanceDeltaLibrary} from "v4-core/src/types/BalanceDelta.sol";
+import {PoolKey} from "v4-core/src/types/PoolKey.sol";
+import {IHooks} from "v4-core/src/interfaces/IHooks.sol";
+import {Hooks} from "v4-core/src/libraries/Hooks.sol";
+import {Test} from "forge-std/Test.sol";
+
+
+abstract contract PoolTestBase is ILockCallback {
+    using CurrencyLibrary for Currency;
+
+    IPoolManager public immutable manager;
+
+    constructor(IPoolManager _manager) {
+        manager = _manager;
+    }
+
+    function _take(Currency currency, address recipient, int128 amount, bool withdrawTokens) internal {
+        assert(amount < 0);
+        if (withdrawTokens) {
+            manager.take(currency, recipient, uint128(-amount));
+        } else {
+            manager.mint(currency, address(this), uint128(-amount));
+        }
+    }
+
+    function _settle(Currency currency, address payer, int128 amount, bool settleUsingTransfer) internal {
+        assert(amount > 0);
+        if (settleUsingTransfer) {
+            if (currency.isNative()) {
+                manager.settle{value: uint128(amount)}(currency);
+            } else {
+                IERC20Minimal(Currency.unwrap(currency)).transferFrom(payer, address(manager), uint128(amount));
+                manager.settle(currency);
+            }
+        } else {
+            manager.burn(currency, uint128(amount));
+        }
+    }
+
+    function _fetchBalances(Currency currency, address user)
+        internal
+        view
+        returns (uint256 userBalance, uint256 poolBalance, uint256 reserves, int256 delta)
+    {
+        userBalance = currency.balanceOf(user);
+        poolBalance = currency.balanceOf(address(manager));
+        reserves = manager.reservesOf(currency);
+        delta = manager.currencyDelta(address(this), currency);
+    }
+}
+
+contract PoolSwapTest is Test, PoolTestBase {
+    using CurrencyLibrary for Currency;
+    using Hooks for IHooks;
+
+    constructor(IPoolManager _manager) PoolTestBase(_manager) {}
+
+    error NoSwapOccurred();
+
+    struct CallbackData {
+        address sender;
+        TestSettings testSettings;
+        PoolKey key;
+        IPoolManager.SwapParams params;
+        bytes hookData;
+    }
+
+    struct TestSettings {
+        bool withdrawTokens;
+        bool settleUsingTransfer;
+    }
+
+    function swap(
+        PoolKey memory key,
+        IPoolManager.SwapParams memory params,
+        TestSettings memory testSettings,
+        bytes memory hookData
+    ) external payable returns (BalanceDelta delta) {
+        delta = abi.decode(
+            manager.lock(abi.encode(CallbackData(msg.sender, testSettings, key, params, hookData))), (BalanceDelta)
+        );
+
+        uint256 ethBalance = address(this).balance;
+        if (ethBalance > 0) CurrencyLibrary.NATIVE.transfer(msg.sender, ethBalance);
+    }
+
+    function lockAcquired(bytes calldata rawData) external returns (bytes memory) {
+        require(msg.sender == address(manager));
+
+        CallbackData memory data = abi.decode(rawData, (CallbackData));
+
+        (,, uint256 reserveBefore0, int256 deltaBefore0) = _fetchBalances(data.key.currency0, data.sender);
+        (,, uint256 reserveBefore1, int256 deltaBefore1) = _fetchBalances(data.key.currency1, data.sender);
+
+        assertEq(deltaBefore0, 0);
+        assertEq(deltaBefore1, 0);
+
+        BalanceDelta delta = manager.swap(data.key, data.params, data.hookData);
+
+        (,, uint256 reserveAfter0, int256 deltaAfter0) = _fetchBalances(data.key.currency0, data.sender);
+        (,, uint256 reserveAfter1, int256 deltaAfter1) = _fetchBalances(data.key.currency1, data.sender);
+
+        // Make sure youve added liquidity to the test pool!
+        if (BalanceDelta.unwrap(delta) == 0) revert NoSwapOccurred();
+
+        if (delta == BalanceDeltaLibrary.MAXIMUM_DELTA) {
+            // Check that this hook is allowed to NoOp, then we can return as we dont need to settle
+            assertTrue(data.key.hooks.hasPermissionToNoOp(), "Invalid NoOp returned");
+            return abi.encode(delta);
+        }
+
+        if (data.params.zeroForOne) {
+            if (data.params.amountSpecified > 0) {
+                // exact input, 0 for 1
+                assertEq(deltaAfter0, data.params.amountSpecified);
+                assert(deltaAfter1 < 0);
+            } else {
+                // exact output, 0 for 1
+                assert(deltaAfter0 > 0);
+                assertEq(deltaAfter1, data.params.amountSpecified);
+            }
+            _settle(data.key.currency0, data.sender, delta.amount0(), data.testSettings.settleUsingTransfer);
+            _take(data.key.currency1, data.sender, delta.amount1(), data.testSettings.withdrawTokens);
+        } else {
+            if (data.params.amountSpecified > 0) {
+                // exact input, 1 for 0
+                assertEq(deltaAfter1, data.params.amountSpecified);
+                assert(deltaAfter0 < 0);
+            } else {
+                // exact output, 1 for 0
+                assert(deltaAfter1 > 0);
+                assertEq(deltaAfter0, data.params.amountSpecified);
+            }
+            _settle(data.key.currency1, data.sender, delta.amount1(), data.testSettings.settleUsingTransfer);
+            _take(data.key.currency0, data.sender, delta.amount0(), data.testSettings.withdrawTokens);
+        }
+
+        return abi.encode(delta);
+    }
+}
