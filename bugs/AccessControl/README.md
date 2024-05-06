@@ -20,3 +20,6 @@ modifier poolManagerOnly() {
 ```
 
 By applying this modifier to all hook functions, the issue may be fully mitigated.
+
+## Patch
+This ([PatchedHook.sol](./PatchedHook.sol)) is the patched version of the vulnerabile hook ([VulnHook.sol](./VulnHook.sol)) contract. 
