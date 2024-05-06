@@ -100,7 +100,7 @@ contract VulnHookTest is Test, Deployers{
     }
 
     function test_AccessControl() public {        
-        console.log("Value of swapCounter initally: ");
+        console.log("Value of swapCounter initially: ");
         console.log(vulnHook.getSwapCounter());
 
         bool zeroForOne = true;
