@@ -203,6 +203,15 @@ contract VulnHookTest is Test, Deployers{
         int24 tick2 = 100;
         uint256 amount2 = 10 ether;
 
+        // order 3 details
+        int24 tick3 = 120;
+        uint256 amount3 = 1 ether;
+
+        console.log("Placing the third zeroForOne order at tick 120");
+        // Place order 3 at tick 120 for 10e18 token0 tokens
+        token0.approve(address(vulnHook), amount2);
+        int24 tickLower3 = vulnHook.placeOrder(key, tick3, amount3, zeroForOne);
+
         console.log("Placing the second zeroForOne order at tick 100");
         // Place order 2 at tick 120 for 10e18 token0 tokens
         token0.approve(address(vulnHook), amount2);
