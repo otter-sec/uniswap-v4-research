@@ -188,7 +188,7 @@ contract VulnHookTest is Test, Deployers{
         console.log("Provided liquidity to the pool");
     }
 
-    function test_poc() public {
+    function test_IncorrectPoolStateUsage() public {
        // order 1 details
         int24 tick1 = 0;
         uint256 amount1 = 10 ether;
