@@ -232,7 +232,7 @@ contract VulnHookTest is Test, Deployers{
         console.log("Executing a OneForzero Swap to initate fillorder");
         swapRouter.swap(key, params, testSettings, ZERO_BYTES);
 
-        console.log("Fulfilled both zeroForOne orders back to back!");
+        console.log("Fulfilled all zeroForOne orders back to back!");
     }
 
     function onERC1155Received(
