@@ -178,11 +178,11 @@ contract VulnHookTest is Test, Deployers{
 
          // Provide liquidity to the pool
         console.log("Providing liquidity to the pool");
-        modifyPositionRouter.modifyPosition(key, IPoolManager.ModifyPositionParams(-60, 60, 10 ether), ZERO_BYTES);
-        modifyPositionRouter.modifyPosition(key, IPoolManager.ModifyPositionParams(-120, 120, 10 ether), ZERO_BYTES);
+        modifyPositionRouter.modifyPosition(key, IPoolManager.ModifyPositionParams(-60, 60, 20 ether), ZERO_BYTES);
+        modifyPositionRouter.modifyPosition(key, IPoolManager.ModifyPositionParams(-120, 120, 20 ether), ZERO_BYTES);
         modifyPositionRouter.modifyPosition(
             key,
-            IPoolManager.ModifyPositionParams(TickMath.minUsableTick(60), TickMath.maxUsableTick(60), 60 ether),
+            IPoolManager.ModifyPositionParams(TickMath.minUsableTick(60), TickMath.maxUsableTick(60), 20 ether),
             ZERO_BYTES
         );
         console.log("Provided liquidity to the pool");
@@ -203,25 +203,26 @@ contract VulnHookTest is Test, Deployers{
         int24 tick2 = 100;
         uint256 amount2 = 10 ether;
 
+        console.log("Placing the second zeroForOne order at tick 100");
+        // Place order 2 at tick 120 for 10e18 token0 tokens
+        token0.approve(address(vulnHook), amount2);
+        int24 tickLower2 = vulnHook.placeOrder(key, tick2, amount2, zeroForOne);
+
         // order 3 details
         int24 tick3 = 120;
-        uint256 amount3 = 1 ether;
+        uint256 amount3 = 10 ether;
 
         console.log("Placing the third zeroForOne order at tick 120");
         // Place order 3 at tick 120 for 10e18 token0 tokens
         token0.approve(address(vulnHook), amount2);
         int24 tickLower3 = vulnHook.placeOrder(key, tick3, amount3, zeroForOne);
 
-        console.log("Placing the second zeroForOne order at tick 100");
-        // Place order 2 at tick 120 for 10e18 token0 tokens
-        token0.approve(address(vulnHook), amount2);
-        int24 tickLower2 = vulnHook.placeOrder(key, tick2, amount2, zeroForOne);
 
         // Do a separate swap from oneForZero to make tick go up
         // Sell 1e18 token1 tokens for token0 tokens
         IPoolManager.SwapParams memory params = IPoolManager.SwapParams({
             zeroForOne: !zeroForOne,
-            amountSpecified: 10 ether,
+            amountSpecified: 1 ether,
             sqrtPriceLimitX96: TickMath.MAX_SQRT_RATIO - 1
         });
         
