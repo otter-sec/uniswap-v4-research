@@ -4,16 +4,16 @@
 
 ### Via Docker
 
-After clonning the repo, run the dockerfile to execute a PoC:
+After cloning the repo, run the Dockerfile to execute a PoC:
 
 ```bash
 docker build --no-cache --progress=plain --build-arg poc_path="./bugs/<folder-name>/PoC.sol" -t hooks . 
 ```
-> Note: If the `poc_path` argument is not specified, all PoC's will be executed by default.
+> Note: If the `poc_path` argument is not specified, all PoCs will be executed by default.
 
 ### Via shell script
 
-After clonning the repo, install the necessary dependencies:
+After cloning the repo, install the necessary dependencies:
 
 ```bash
 forge install https://github.com/Uniswap/v4-core@06564d33b2fa6095830c914461ee64d34d39c305
